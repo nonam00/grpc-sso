@@ -1,17 +1,19 @@
-package migrator
+package main
 
 import (
-	"errors"
-	"flag"
-	"fmt"
+	  "errors"
+	  "flag"
+	  "fmt"
 
-	"github.com/golang-migrate/migrate/v4"
+	  "github.com/golang-migrate/migrate/v4"
+    _ "github.com/golang-migrate/migrate/v4/database/sqlite3"
+    _ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
     var storagePath, migrationsPath, migrationsTable string
   
-    flag.StringVar(&storagePath, "storage-path", "", "db path")
+    flag.StringVar(&storagePath, "storage-path", "", "path to storage")
     flag.StringVar(&migrationsPath, "migrations-path", "", "path to migrations")
     flag.StringVar(&migrationsTable, "migrations-table", "migrations", "name of migrations")
     flag.Parse()

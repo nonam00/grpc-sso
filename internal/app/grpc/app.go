@@ -1,12 +1,12 @@
 package grpcapp
 
 import (
-	  "fmt"
-	  "log/slog"
-	  "net"
-	  authgrpc "grpc-service-ref/internal/grpc/auth"
+	"fmt"
+	authgrpc "grpc-service-ref/internal/grpc/auth"
+	"log/slog"
+	"net"
 
-	  "google.golang.org/grpc"
+	"google.golang.org/grpc"
 )
 type App struct {
     log        *slog.Logger
@@ -15,19 +15,21 @@ type App struct {
 }
 
 
+// New creates new gRPC server app.
 func New(
     log *slog.Logger,
+    authService authgrpc.Auth,
     port int,
 ) *App {
-  gRPCServer := grpc.NewServer()
+    gRPCServer := grpc.NewServer()
 
-  authgrpc.Register(gRPCServer)
+    authgrpc.Register(gRPCServer, authService)
 
-  return &App{
-      log:        log,
-      gRPCServer: gRPCServer,
-      port:       port,
-  }
+    return &App{
+        log:        log,
+        gRPCServer: gRPCServer,
+        port:       port,
+    }
 }
 
 // MustRun runs gRPC server and panics if any errors occurs.
