@@ -1,7 +1,10 @@
 env: "local" #dev, prod
-storage_path: "./storage/sso.db"
 token_ttl: 1h
+postgres_connection:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "1234"
 grpc:
   port: 44044
   timeout: 10s
-  

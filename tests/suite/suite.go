@@ -45,9 +45,9 @@ func New(t *testing.T) (context.Context, *Suite) {
     }
 
     return ctx, &Suite{
-    	  T:          t,
+    	T:          t,
       	Cfg:        cfg,
-    	  AuthClient: ssov1.NewAuthClient(cc),
+    	AuthClient: ssov1.NewAuthClient(cc),
     }
 }
 

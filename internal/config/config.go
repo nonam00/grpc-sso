@@ -1,22 +1,29 @@
 package config
 
 import (
-	  "flag"
-	  "os"
-	  "time"
-	  "github.com/ilyakaznacheev/cleanenv"
+	"flag"
+	"os"
+	"time"
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
     Env         string        `yaml:"env" env-default:"local"`
-    StoragePath string        `yaml:"storage_path" env-required:"./data"`
     TokenTTL    time.Duration `yaml:"token_ttl" env-required:"true"`
+    PGConn      PGConn        `yaml:"postgres_connection" env-required:"./data"`
     GRPC        GRPCConfig    `yaml:"grpc"`
 }
 
 type GRPCConfig struct {
     Port    int           `yaml:"port"` 
     Timeout time.Duration `yaml:"timeout"`
+}
+
+type PGConn struct {
+    Host     string `yaml:"host"`
+    Port     int    `yaml:"port"`
+    User     string `yaml:"user"`
+    Password string `yaml:"password"`
 }
 
 func MustLoad() *Config {

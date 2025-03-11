@@ -13,10 +13,7 @@ import (
 )
 
 const (
-    emptyAppID = 0
-    appID      = 1
-    appSecret  = "test-secret"
-
+    secret = "test-secret"
     passDefaultLen = 10
 )
 
@@ -37,7 +34,6 @@ func TestRegisterLogin_Login_HappyPath(t *testing.T) {
     respLogin, err := st.AuthClient.Login(ctx, &ssov1.LoginRequest{
   	    Email:    email,
   	    Password: pass,
-  	    AppId:    appID,
     })
 
     loginTime := time.Now()
@@ -47,8 +43,9 @@ func TestRegisterLogin_Login_HappyPath(t *testing.T) {
     token := respLogin.GetToken()
     require.NotEmpty(t, token)
     
+    // TODO: secret
     tokenParsed, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
-        return []byte(appSecret), nil
+        return []byte(secret), nil
     })
     require.NoError(t, err)
 
@@ -56,8 +53,6 @@ func TestRegisterLogin_Login_HappyPath(t *testing.T) {
     assert.True(t, ok)
     
     assert.Equal(t, respRegister.GetUserId(), int64(claims["uid"].(float64)))
-    assert.Equal(t, email, claims["email"].(string))
-    assert.Equal(t, appID, int(claims["app_id"].(float64)))
 
     const deltaSeconds = 1
     assert.InDelta(t, loginTime.Add(st.Cfg.TokenTTL).Unix(), claims["exp"].(float64), deltaSeconds)
@@ -144,36 +139,25 @@ func TestLogin_FailCases(t *testing.T) {
 			      name:        "Login with Empty Password",
 			      email:       gofakeit.Email(),
 			      password:    "",
-			      appID:       appID,
 			      expectedErr: "password is required",
 		    },
 		    {
 			      name:        "Login with Empty Email",
 			      email:       "",
 			      password:    randomFakePassword(),
-			      appID:       appID,
 			      expectedErr: "email is required",
 		    },
 		    {
 			      name:        "Login with Both Empty Email and Password",
 			      email:       "",
 			      password:    "",
-			      appID:       appID,
 			      expectedErr: "email is required",
 		    },
 		    {
 			      name:        "Login with Non-Matching Password",
 			      email:       gofakeit.Email(),
 			      password:    randomFakePassword(),
-			      appID:       appID,
 			      expectedErr: "invalid email or password",
-		    },
-		    {
-			      name:        "Login without AppID",
-			      email:       gofakeit.Email(),
-			      password:    randomFakePassword(),
-			      appID:       emptyAppID,
-			      expectedErr: "app_id is required",
 		    },
     }
 
@@ -190,7 +174,6 @@ func TestLogin_FailCases(t *testing.T) {
 			      _, err = st.AuthClient.Login(ctx, &ssov1.LoginRequest{
 				        Email:    tt.email,
 				        Password: tt.password,
-				        AppId:    tt.appID,
 			      })
 		      	require.Error(t, err)
 			      require.Contains(t, err.Error(), tt.expectedErr)

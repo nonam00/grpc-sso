@@ -1,18 +1,28 @@
 package main
 
 import (
-	  "grpc-service-ref/internal/app"
-	  "grpc-service-ref/internal/config"
-	  "log/slog"
-	  "os"
-	  "os/signal"
-	  "syscall"
+	"fmt"
+	"grpc-service-ref/internal/app"
+	"grpc-service-ref/internal/config"
+	"log/slog"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 const (
     envLocal = "local"
     envDev   = "dev"
     envProd  = "prod"
+)
+
+//TODO: move to config
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "postgres"
+	password = "1234"
+	dbname   = "auth"
 )
 
 func main() {
@@ -22,7 +32,12 @@ func main() {
 
     log.Info("starting application", slog.Any("cfg", cfg))
   
-    application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
+    psqlInfo := fmt.Sprintf(
+        "host=%s port=%d user=%s password=%s dbname=%s",
+        host, port, user, password, dbname,
+    )
+
+    application := app.New(log, cfg.GRPC.Port, psqlInfo, cfg.TokenTTL)
 
     go application.GRPCSrc.MustRun()
     
