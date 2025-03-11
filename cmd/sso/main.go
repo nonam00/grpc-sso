@@ -1,12 +1,12 @@
 package main
 
 import (
-	"grpc-service-ref/internal/app"
-	"grpc-service-ref/internal/config"
-	"log/slog"
-	"os"
-	"os/signal"
-	"syscall"
+	  "grpc-service-ref/internal/app"
+	  "grpc-service-ref/internal/config"
+	  "log/slog"
+	  "os"
+	  "os/signal"
+	  "syscall"
 )
 
 const (

@@ -1,63 +1,64 @@
 package auth
 
 import (
-	"context"
-	"errors"
-	"fmt"
-	"grpc-service-ref/internal/domain/models"
-	"grpc-service-ref/internal/lib/jwt"
-	"grpc-service-ref/internal/storage"
-	"log/slog"
-	"time"
+	  "context"
+	  "errors"
+	  "fmt"
+	  "grpc-service-ref/internal/domain/models"
+	  "grpc-service-ref/internal/lib/jwt"
+	  "grpc-service-ref/internal/storage"
+	  "log/slog"
+	  "time"
 
-	"golang.org/x/crypto/bcrypt"
+	  "golang.org/x/crypto/bcrypt"
 )
 
 type Auth struct {
-	log         *slog.Logger
-	usrProvider UserProvider
-	usrSaver    UserSaver
-	appProvider AppProvider
-	tokenTTL    time.Duration
+	  log         *slog.Logger
+	  usrProvider UserProvider
+	  usrSaver    UserSaver
+	  appProvider AppProvider
+	  tokenTTL    time.Duration
 }
 
 type UserSaver interface {
-	SaveUser(
-		ctx context.Context,
-		email string,
-		passHash []byte,
-	) (uid int64, err error)
+	  SaveUser(
+		    ctx context.Context,
+		    email string,
+		    passHash []byte,
+	  ) (uid int64, err error)
 }
 
 type UserProvider interface {
-	User(ctx context.Context, email string) (models.User, error)
-	IsAdmin(ctx context.Context, userID int64) (bool, error)
+	  User(ctx context.Context, email string) (models.User, error)
+	  IsAdmin(ctx context.Context, userID int64) (bool, error)
 }
 
 type AppProvider interface {
-	App(ctx context.Context, appId int) (models.App, error)
+	  App(ctx context.Context, appId int) (models.App, error)
 }
 
 var (
-	ErrInvalidCredentials = errors.New("invalid credentials")
-	ErrUserExists         = errors.New("user already exists")
+	  ErrInvalidCredentials = errors.New("invalid credentials")
+	  ErrUserExists         = errors.New("user already exists")
+    ErrUserNotFound       = errors.New("user not found")
 )
 
 // New returns a new instance of the Auth service
 func New(
-	log *slog.Logger,
-	userSaver UserSaver,
-	userProvider UserProvider,
-	appProvider AppProvider,
-	tokenTTL time.Duration,
+	  log *slog.Logger,
+	  userSaver UserSaver,
+	  userProvider UserProvider,
+	  appProvider AppProvider,
+	  tokenTTL time.Duration,
 ) *Auth {
-	return &Auth{
-		log:         log,
-		usrProvider: userProvider,
-		usrSaver:    userSaver,
-		appProvider: appProvider,
-		tokenTTL:    tokenTTL,
-	}
+	  return &Auth{
+		    log:         log,
+		    usrProvider: userProvider,
+		    usrSaver:    userSaver,
+		    appProvider: appProvider,
+		    tokenTTL:    tokenTTL,
+	  }
 }
 
 // Login chechs if user with given credentials exists in the system.
