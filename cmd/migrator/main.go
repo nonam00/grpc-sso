@@ -1,35 +1,47 @@
 package main
 
 import (
-	  "errors"
-	  "flag"
-	  "fmt"
+	"database/sql"
+	"errors"
+	"flag"
+	"fmt"
 
-	  "github.com/golang-migrate/migrate/v4"
-    _ "github.com/golang-migrate/migrate/v4/database/postgres"
-    _ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
-    var connectionUrl, migrationsPath, migrationsTable string
+    var connectionStr, migrationsPath string
   
-    flag.StringVar(&connectionUrl, "connection-url", "", "postgres url for db")
+    flag.StringVar(&connectionStr, "connection-string", "", "postgres connection string for db")
     flag.StringVar(&migrationsPath, "migrations-path", "", "path to migrations")
-    flag.StringVar(&migrationsTable, "migrations-table", "migrations", "name of migrations")
     flag.Parse()
   
-    if connectionUrl == "" {
-        panic("connection-url is required")
+    if connectionStr == "" {
+        panic("connection-string is required")
     }
 
     if migrationsPath == "" {
         panic("migrations-path is required") 
     }
 
-    m, err := migrate.New(
+    db, err := sql.Open("postgres", connectionStr)
+
+    if err != nil {
+        panic(err)
+    }
+
+    defer db.Close()
+
+    driver, err := postgres.WithInstance(db, &postgres.Config{})
+
+    m, err := migrate.NewWithDatabaseInstance(
         "file://"+migrationsPath,
-        fmt.Sprintf("%s/%s", connectionUrl, migrationsTable),
+        "postgres",
+        driver,
     )
+
     if err != nil {
         panic(err)
     }

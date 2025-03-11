@@ -4,7 +4,8 @@ postgres_connection:
   host: "localhost"
   port: 5432
   user: "postgres"
-  password: "1234"
+  password: "postgres"
+  dbname: "postgres"
 grpc:
-  port: 44044
-  timeout: 10s
+  port: 3000
+  timeout: 1s

@@ -94,10 +94,6 @@ func validateLogin(req *ssov1.LoginRequest) error {
         return status.Error(codes.InvalidArgument, "email is required")
     }
 
-    if req.GetAppId() == emptyValue {
-        return status.Error(codes.InvalidArgument, "app_id is required") 
-    }
-
     return nil
 }
 

@@ -16,15 +16,6 @@ const (
     envProd  = "prod"
 )
 
-//TODO: move to config
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "1234"
-	dbname   = "auth"
-)
-
 func main() {
     cfg := config.MustLoad()
   
@@ -34,7 +25,7 @@ func main() {
   
     psqlInfo := fmt.Sprintf(
         "host=%s port=%d user=%s password=%s dbname=%s",
-        host, port, user, password, dbname,
+        cfg.PGConn.Host, cfg.PGConn.Port, cfg.PGConn.User, cfg.PGConn.Password, cfg.PGConn.DbName,
     )
 
     application := app.New(log, cfg.GRPC.Port, psqlInfo, cfg.TokenTTL)
