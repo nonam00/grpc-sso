@@ -24,7 +24,7 @@ func main() {
     log.Info("starting application", slog.Any("cfg", cfg))
   
     psqlInfo := fmt.Sprintf(
-        "host=%s port=%d user=%s password=%s dbname=%s",
+        "host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
         cfg.PGConn.Host, cfg.PGConn.Port, cfg.PGConn.User, cfg.PGConn.Password, cfg.PGConn.DbName,
     )
 

@@ -30,12 +30,13 @@ func New(connStr string) (*Storage, error) {
 func (s *Storage) SaveUser(ctx context.Context, email string, passHash []byte) (int64, error) {
     const op = "storage.postgres.SaveUser"
 
-    stmt, err :=  s.db.Prepare("INSERT INTO users(email, pass_hash) VALUES($1, $2)")
+    stmt, err :=  s.db.Prepare("INSERT INTO users(email, pass_hash) VALUES($1, $2) RETURNING id")
     if err != nil {
         return 0, fmt.Errorf("%s: %w", op, err)
     }
 
-    res, err := stmt.ExecContext(ctx, email, passHash)
+    var id int64
+    err = stmt.QueryRowContext(ctx, email, passHash).Scan(&id)
     if err != nil {
         var pgErr *pq.Error
 
@@ -43,11 +44,6 @@ func (s *Storage) SaveUser(ctx context.Context, email string, passHash []byte) (
             return 0, fmt.Errorf("%s: %w", op, storage.ErrUserExists)
         }
 
-        return 0, fmt.Errorf("%s: %w", op, err)
-    }
-
-    id, err := res.LastInsertId()
-    if err != nil {
         return 0, fmt.Errorf("%s: %w", op, err)
     }
 
